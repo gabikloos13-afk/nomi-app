@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nomi-pwa-shell-v1.0.0';
+const CACHE_NAME = 'nomi-pwa-shell-v1.0.1';
 
 const SHELL_FILES = [
   './',
