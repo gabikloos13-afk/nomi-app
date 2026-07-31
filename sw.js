@@ -1,13 +1,14 @@
 const CACHE_NAME =
-  'nomi-pwa-shell-v1.0.3';
+  'nomi-pwa-shell-v1.0.4';
 
 const SHELL_FILES = [
   './',
   './index.html',
   './offline.html',
   './manifest.webmanifest',
-  './nomi-512.png',
-  './nomi-maskable-512.png'
+  './nomi-192-v2.png',
+  './nomi-512-v2.png',
+  './nomi-maskable-512-v2.png'
 ];
 
 self.addEventListener(
@@ -86,10 +87,20 @@ self.addEventListener(
       return;
     }
 
-    if (
+    const alwaysFresh =
       event.request.mode ===
-        'navigate'
-    ) {
+        'navigate' ||
+      requestUrl.pathname.endsWith(
+        '/index.html'
+      ) ||
+      requestUrl.pathname.endsWith(
+        '/manifest.webmanifest'
+      ) ||
+      requestUrl.pathname.endsWith(
+        '/sw.js'
+      );
+
+    if (alwaysFresh) {
       event.respondWith(
         fetch(event.request)
           .then(
@@ -103,7 +114,7 @@ self.addEventListener(
                   .then(
                     function (cache) {
                       return cache.put(
-                        './index.html',
+                        event.request,
                         copy
                       );
                     }
@@ -116,6 +127,9 @@ self.addEventListener(
           .catch(
             async function () {
               return (
+                await caches.match(
+                  event.request
+                ) ||
                 await caches.match(
                   './index.html'
                 ) ||
@@ -135,9 +149,32 @@ self.addEventListener(
         .match(event.request)
         .then(
           function (cached) {
-            return (
-              cached ||
-              fetch(event.request)
+            if (cached) {
+              return cached;
+            }
+
+            return fetch(
+              event.request
+            ).then(
+              function (response) {
+                if (response.ok) {
+                  const copy =
+                    response.clone();
+
+                  caches
+                    .open(CACHE_NAME)
+                    .then(
+                      function (cache) {
+                        return cache.put(
+                          event.request,
+                          copy
+                        );
+                      }
+                    );
+                }
+
+                return response;
+              }
             );
           }
         )
