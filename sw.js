@@ -1,28 +1,32 @@
 const CACHE_NAME =
-  'nomi-pwa-shell-v1.0.2';
+  'nomi-pwa-shell-v1.0.3';
 
 const SHELL_FILES = [
   './',
   './index.html',
   './offline.html',
-  './config.js',
-  './app.js',
-  './manifest.webmanifest'
+  './manifest.webmanifest',
+  './nomi-512.png',
+  './nomi-maskable-512.png'
 ];
 
 self.addEventListener(
   'install',
-  (event) => {
+  function (event) {
     event.waitUntil(
       caches
         .open(CACHE_NAME)
-        .then((cache) =>
-          cache.addAll(
-            SHELL_FILES
-          )
+        .then(
+          function (cache) {
+            return cache.addAll(
+              SHELL_FILES
+            );
+          }
         )
-        .then(() =>
-          self.skipWaiting()
+        .then(
+          function () {
+            return self.skipWaiting();
+          }
         )
     );
   }
@@ -30,28 +34,36 @@ self.addEventListener(
 
 self.addEventListener(
   'activate',
-  (event) => {
+  function (event) {
     event.waitUntil(
       caches
         .keys()
-        .then((keys) =>
-          Promise.all(
-            keys
-              .filter(
-                (key) =>
-                  key !==
-                  CACHE_NAME
-              )
-              .map(
-                (key) =>
-                  caches.delete(
-                    key
-                  )
-              )
-          )
+        .then(
+          function (keys) {
+            return Promise.all(
+              keys
+                .filter(
+                  function (key) {
+                    return (
+                      key !==
+                      CACHE_NAME
+                    );
+                  }
+                )
+                .map(
+                  function (key) {
+                    return caches.delete(
+                      key
+                    );
+                  }
+                )
+            );
+          }
         )
-        .then(() =>
-          self.clients.claim()
+        .then(
+          function () {
+            return self.clients.claim();
+          }
         )
     );
   }
@@ -59,7 +71,7 @@ self.addEventListener(
 
 self.addEventListener(
   'fetch',
-  (event) => {
+  function (event) {
     const requestUrl =
       new URL(
         event.request.url
@@ -74,57 +86,45 @@ self.addEventListener(
       return;
     }
 
-    const isFreshFile =
+    if (
       event.request.mode ===
-        'navigate' ||
-      requestUrl.pathname.endsWith(
-        '/index.html'
-      ) ||
-      requestUrl.pathname.endsWith(
-        '/app.js'
-      ) ||
-      requestUrl.pathname.endsWith(
-        '/config.js'
-      ) ||
-      requestUrl.pathname.endsWith(
-        '/sw.js'
-      );
-
-    if (isFreshFile) {
+        'navigate'
+    ) {
       event.respondWith(
         fetch(event.request)
-          .then((response) => {
-            if (response.ok) {
-              const copy =
-                response.clone();
+          .then(
+            function (response) {
+              if (response.ok) {
+                const copy =
+                  response.clone();
 
-              caches
-                .open(
-                  CACHE_NAME
-                )
-                .then((cache) =>
-                  cache.put(
-                    event.request,
-                    copy
-                  )
-                );
+                caches
+                  .open(CACHE_NAME)
+                  .then(
+                    function (cache) {
+                      return cache.put(
+                        './index.html',
+                        copy
+                      );
+                    }
+                  );
+              }
+
+              return response;
             }
-
-            return response;
-          })
-          .catch(async () => {
-            return (
-              await caches.match(
-                event.request
-              ) ||
-              await caches.match(
-                './index.html'
-              ) ||
-              await caches.match(
-                './offline.html'
-              )
-            );
-          })
+          )
+          .catch(
+            async function () {
+              return (
+                await caches.match(
+                  './index.html'
+                ) ||
+                await caches.match(
+                  './offline.html'
+                )
+              );
+            }
+          )
       );
 
       return;
@@ -133,33 +133,14 @@ self.addEventListener(
     event.respondWith(
       caches
         .match(event.request)
-        .then((cached) => {
-          if (cached) {
-            return cached;
+        .then(
+          function (cached) {
+            return (
+              cached ||
+              fetch(event.request)
+            );
           }
-
-          return fetch(
-            event.request
-          ).then((response) => {
-            if (response.ok) {
-              const copy =
-                response.clone();
-
-              caches
-                .open(
-                  CACHE_NAME
-                )
-                .then((cache) =>
-                  cache.put(
-                    event.request,
-                    copy
-                  )
-                );
-            }
-
-            return response;
-          });
-        })
+        )
     );
   }
 );
