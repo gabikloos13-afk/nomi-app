@@ -1,0 +1,148 @@
+(() => {
+  'use strict';
+
+  let deferredInstallPrompt = null;
+  let loadTimer = null;
+
+  const get = (id) => document.getElementById(id);
+
+  function configIsValid(config) {
+    return Boolean(
+      config &&
+      /^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec(?:[?#].*)?$/i
+        .test(String(config.appUrl || '').trim())
+    );
+  }
+
+  function show(id) {
+    get(id).hidden = false;
+  }
+
+  function hide(id) {
+    get(id).hidden = true;
+  }
+
+  function setDirectLinks(url) {
+    get('open-direct').href = url;
+  }
+
+  function loadNomi() {
+    const config = window.NOMI_CONFIG || {};
+
+    if (!navigator.onLine) {
+      hide('splash');
+      hide('problem');
+      show('offline');
+      return;
+    }
+
+    if (!configIsValid(config)) {
+      hide('splash');
+      hide('offline');
+      get('problem-text').textContent =
+        'In config.js fehlt noch die gültige Apps-Script-Web-App-Adresse mit /exec am Ende.';
+      get('open-direct').hidden = true;
+      show('problem');
+      return;
+    }
+
+    const url = String(config.appUrl).trim();
+    const frame = get('nomi-frame');
+
+    setDirectLinks(url);
+    get('open-direct').hidden = false;
+
+    hide('problem');
+    hide('offline');
+    show('splash');
+    frame.hidden = true;
+
+    clearTimeout(loadTimer);
+
+    const separator = url.includes('?') ? '&' : '?';
+    frame.src = `${url}${separator}nomiPwa=1&t=${Date.now()}`;
+
+    loadTimer = window.setTimeout(() => {
+      hide('splash');
+      show('problem');
+    }, Number(config.loadTimeoutMs || 14000));
+  }
+
+  function frameLoaded() {
+    clearTimeout(loadTimer);
+    hide('splash');
+    hide('problem');
+    hide('offline');
+    get('nomi-frame').hidden = false;
+    document.body.classList.add('ready');
+  }
+
+  function updateOnlineState() {
+    get('offline-pill').hidden = navigator.onLine;
+    if (navigator.onLine && !get('offline').hidden) {
+      loadNomi();
+    } else if (!navigator.onLine) {
+      hide('splash');
+      hide('problem');
+      show('offline');
+    }
+  }
+
+  async function installApp() {
+    if (!deferredInstallPrompt) {
+      return;
+    }
+
+    deferredInstallPrompt.prompt();
+    await deferredInstallPrompt.userChoice;
+    deferredInstallPrompt = null;
+    get('install-button').hidden = true;
+  }
+
+  async function registerServiceWorker() {
+    if (!('serviceWorker' in navigator)) {
+      return;
+    }
+
+    try {
+      await navigator.serviceWorker.register('./sw.js', {
+        scope: './'
+      });
+    } catch (error) {
+      console.warn('Service Worker konnte nicht registriert werden.', error);
+    }
+  }
+
+  window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    get('install-button').hidden = false;
+  });
+
+  window.addEventListener('appinstalled', () => {
+    deferredInstallPrompt = null;
+    get('install-button').hidden = true;
+  });
+
+  window.addEventListener('online', updateOnlineState);
+  window.addEventListener('offline', updateOnlineState);
+
+  document.addEventListener('DOMContentLoaded', () => {
+    get('nomi-frame').addEventListener('load', frameLoaded);
+    get('retry').addEventListener('click', loadNomi);
+    get('offline-retry').addEventListener('click', loadNomi);
+    get('reload-button').addEventListener('click', loadNomi);
+    get('install-button').addEventListener('click', installApp);
+
+    get('open-button').addEventListener('click', () => {
+      const config = window.NOMI_CONFIG || {};
+      if (configIsValid(config)) {
+        window.open(config.appUrl, '_blank', 'noopener,noreferrer');
+      }
+    });
+
+    updateOnlineState();
+    loadNomi();
+    registerServiceWorker();
+  });
+})();
