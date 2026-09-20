@@ -1,5 +1,4 @@
-// Nach der Apps-Script-Bereitstellung hier die NEUE /exec-URL eintragen.
-// Beispiel: https://script.google.com/macros/s/AKfycb.../exec
+// Apps-Script-Web-App für Nomi 2.
 window.NOMI_CONFIG = Object.freeze({
-  APP_URL: 'HIER_DIE_NEUE_APPS_SCRIPT_EXEC_URL_EINTRAGEN'
+  APP_URL: 'https://script.google.com/macros/s/AKfycbxnaiV8o4t7skhkYp6iSNUQSWR_kMku5H2lBkLeXdGcvoORHmGnHgdY13Hwk8YNWiuR4A/exec'
 });
