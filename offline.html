@@ -2,59 +2,19 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1"
-  >
-  <meta name="theme-color" content="#314e68">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#344b5e">
   <title>Nomi – Offline</title>
   <style>
-    * { box-sizing: border-box; }
-    body {
-      min-height: 100vh;
-      margin: 0;
-      display: grid;
-      place-items: center;
-      padding: 24px;
-      background: #f4f2ee;
-      color: #344b5e;
-      font-family: Inter, system-ui, sans-serif;
-      text-align: center;
-    }
-    main {
-      width: min(100%, 430px);
-      border: 1px solid #dce3e6;
-      border-radius: 24px;
-      padding: 26px;
-      background: #fff;
-      box-shadow: 0 20px 55px rgba(52, 75, 94, 0.12);
-    }
-    img {
-      width: 86px;
-      height: 86px;
-      border-radius: 24px;
-    }
-    h1 {
-      margin: 17px 0 0;
-      font-size: 27px;
-      letter-spacing: -0.04em;
-    }
-    p {
-      margin: 10px 0 0;
-      color: #68747b;
-      line-height: 1.55;
-    }
+    *{box-sizing:border-box}html,body{min-height:100%;margin:0}body{display:grid;place-items:center;padding:24px;background:#f4f2ee;color:#344b5e;font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;text-align:center}.card{width:min(100%,420px);border-radius:24px;padding:28px 22px;background:#fff;box-shadow:0 20px 60px rgba(52,75,94,.12)}.mark{display:grid;place-items:center;width:58px;height:58px;margin:0 auto 14px;border-radius:18px;background:#e5ecef;font-size:28px}h1{margin:0;font-size:25px}p{margin:9px 0 0;color:#6f7d84;font-size:13px;line-height:1.5}button{min-height:46px;margin-top:17px;border:0;border-radius:13px;padding:10px 16px;background:#344b5e;color:#fff;font:inherit;font-weight:700}
   </style>
 </head>
 <body>
-  <main>
-    <img src="./icons/nomi-192.png" alt="">
-    <h1>Nomi ist gerade offline</h1>
-    <p>
-      Die installierte App-Hülle ist verfügbar. Reise-, Aufgaben- und
-      Packdaten werden jedoch aus Google Apps Script geladen und benötigen
-      eine Internetverbindung.
-    </p>
+  <main class="card">
+    <div class="mark">↻</div>
+    <h1>Keine Verbindung</h1>
+    <p>Die installierte Nomi-Hülle ist da, aber die gemeinsamen Daten aus Google Sheets benötigen eine Internetverbindung.</p>
+    <button type="button" onclick="location.reload()">Erneut versuchen</button>
   </main>
 </body>
 </html>
