@@ -1,32 +1,17 @@
 {
-  "name": "Nomi – Reiseplanung",
-  "short_name": "Nomi",
-  "description": "Eure einfache Reise-, Pack- und Aufgaben-App.",
-  "id": "./",
-  "start_url": "./",
-  "scope": "./",
-  "display": "standalone",
-  "background_color": "#f4f2ee",
-  "theme_color": "#344b5e",
-  "lang": "de",
-  "icons": [
-    {
-      "src": "./icons/nomi-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "./icons/nomi-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "./icons/nomi-maskable-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
+  "name":"Nomi – Reiseplanung",
+  "short_name":"Nomi",
+  "description":"Eure einfache Reise-, Pack- und Aufgaben-App.",
+  "id":"./",
+  "start_url":"./",
+  "scope":"./",
+  "display":"standalone",
+  "background_color":"#f4f2ee",
+  "theme_color":"#344b5e",
+  "lang":"de",
+  "icons":[
+    {"src":"./nomi-192-v2.png","sizes":"192x192","type":"image/png","purpose":"any"},
+    {"src":"./nomi-512-v2.png","sizes":"512x512","type":"image/png","purpose":"any"},
+    {"src":"./nomi-maskable-512-v2.png","sizes":"512x512","type":"image/png","purpose":"maskable"}
   ]
 }
